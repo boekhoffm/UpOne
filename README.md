@@ -43,10 +43,26 @@ the UpOne card's **Details** button, and enable **Allow access to file URLs**.
 Chrome requires this per-extension opt-in before any extension can read or
 manipulate `file://` tabs.
 
+## Directory listing sort (v1.4+)
+
+When you view a `file:///<dir>/` URL in Chrome, the browser renders a table listing of the folder contents. Out of the box Chrome sorts by **Name ascending** with no preference stored.
+
+UpOne injects a content script on every `file://` page that:
+
+1. Bails unless the document title begins with `Index of ` (the Chromium directory-listing marker).
+2. Finds the `<tbody>` inside the listing table.
+3. Locates the **Date Modified** column by header text (falls back to column index 2).
+4. Reorders the rows by that column **descending**.
+
+The `[parent directory]` link lives outside the table and is not touched. If you click the `Name` or `Size` header to re-sort, Chromium's built-in handler takes over and wins -- UpOne only sets the initial order.
+
+Requires the same **Allow access to file URLs** toggle as the navigation feature; see above.
+
 ## Files
 
 | File | Purpose |
 |---|---|
-| `manifest.json` | MV3 manifest; declares the `go-up` command and its default shortcut. |
-| `background.js` | Service worker. Handles the keyboard command and toolbar click. |
+| `manifest.json` | MV3 manifest; declares the `go-up` command, the content script, and `file:///*` host permission. |
+| `background.js` | Service worker. Handles the keyboard command, toolbar click, and post-navigation hard refresh. |
+| `content.js` | Content script. Sorts `file://` directory listings by Date Modified descending. |
 | `icon16.png` | 16x16 toolbar icon -- capital **U**. |

@@ -1,10 +1,13 @@
 {
   "manifest_version": 3,
   "name": "UpOne",
-  "version": "1.3",
-  "description": "Navigate up one level in the URL hierarchy, then hard-refresh the target page (bypass cache). Use Alt+Up (configurable) or click the toolbar icon. No scheme filtering.",
+  "version": "1.4",
+  "description": "Navigate up one level in the URL hierarchy (Alt+Up), hard-refresh the target page, and sort file:// directory listings by Date Modified descending.",
   "permissions": [
     "tabs"
+  ],
+  "host_permissions": [
+    "file:///*"
   ],
   "action": {
     "default_icon": {
@@ -15,6 +18,14 @@
   "background": {
     "service_worker": "background.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["file:///*"],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
   "commands": {
     "go-up": {
       "suggested_key": {
