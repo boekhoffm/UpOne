@@ -1,26 +1,35 @@
 console.log("UpOne service worker loaded: "
           + new Date().toISOString().replace(/\D/g, '').slice(0, 14));
 
+// Schemes we never touch (browser internals, extension pages, etc.).
+const BLOCKED_PROTOCOLS = new Set([
+    "chrome:", "chrome-extension:", "chrome-search:", "chrome-untrusted:",
+    "about:",  "edge:",             "opera:",         "brave:",
+    "view-source:", "data:", "javascript:",
+    "devtools:"
+]);
+
 // Return the URL one level up from `currentUrl`, or null if there is nowhere
-// to go (non-http scheme, or already at the site root).
-//
-// Single-step behaviour: in one press, strip query and fragment AND go up one
-// path segment. Pressing Alt+Up again then steps further up the hierarchy.
+// to go. Supports http:, https:, and file:. In one press: strip query +
+// fragment AND drop the last path segment.
 function goUpOneLevel(currentUrl) {
     try {
         const u = new URL(currentUrl);
-        if (u.protocol !== 'http:' && u.protocol !== 'https:') {
-            return null;   // don't touch chrome://, about:, file:, etc.
-        }
+        if (BLOCKED_PROTOCOLS.has(u.protocol)) return null;
 
-        u.search = '';
-        u.hash   = '';
+        u.search = "";
+        u.hash   = "";
 
-        const segs = u.pathname.split('/').filter(s => s !== '');
-        if (segs.length === 0) return null;   // already at domain root
+        const segs = u.pathname.split("/").filter(s => s !== "");
+        if (segs.length === 0) return null;   // already at the site/drive root
 
         segs.pop();
-        u.pathname = segs.length === 0 ? '/' : ('/' + segs.join('/') + '/');
+
+        // For file:// URLs, stop at the drive root -- don't navigate to the
+        // useless `file:///` (no-drive root).
+        if (u.protocol === "file:" && segs.length === 0) return null;
+
+        u.pathname = segs.length === 0 ? "/" : ("/" + segs.join("/") + "/");
         return u.href;
     } catch (e) {
         return null;

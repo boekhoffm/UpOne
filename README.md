@@ -13,7 +13,14 @@ In a single press:
 1. Query string (`?...`) and fragment (`#...`) are removed.
 2. The last path segment is removed.
 
-Examples:
+### Supported schemes
+
+`http://`, `https://`, `file://`. Browser-internal schemes (`chrome://`,
+`about:`, `edge://`, `chrome-extension://`, `view-source:`, `data:`,
+`javascript:`, `devtools:`) are deliberately skipped -- the extension
+no-ops on those.
+
+### Examples
 
 | From | To |
 |---|---|
@@ -21,7 +28,10 @@ Examples:
 | `https://example.com/a/b/` | `https://example.com/a/` |
 | `https://example.com/a/` | `https://example.com/` |
 | `https://example.com/` | *no change (already at root)* |
-| `chrome://extensions/` / `file://...` / `about:blank` | *no change* |
+| `file:///C:/foo/bar/x.md` | `file:///C:/foo/bar/` |
+| `file:///C:/foo/bar/` | `file:///C:/foo/` |
+| `file:///C:/` | *no change (at drive root)* |
+| `chrome://extensions/` | *no change (browser-internal)* |
 
 ## Install (developer mode)
 
@@ -29,6 +39,13 @@ Examples:
 2. Enable **Developer mode** (top right).
 3. Click **Load unpacked** and pick this directory.
 4. Optionally rebind the shortcut in `chrome://extensions/shortcuts`.
+
+### `file://` URL access
+
+If Alt+Up does nothing on a `file://` tab, open `chrome://extensions/`, click
+the UpOne card's **Details** button, and enable **Allow access to file URLs**.
+Chrome requires this per-extension opt-in before any extension can read or
+manipulate `file://` tabs.
 
 ## Files
 
