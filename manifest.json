@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "UpOne",
+  "version": "1.0",
+  "description": "Navigate up one level in the URL hierarchy. Use Alt+Up (configurable) or click the toolbar icon.",
+  "permissions": ["tabs"],
+  "action": {
+    "default_icon": {
+      "16": "icon16.png"
+    },
+    "default_title": "UpOne -- go up one URL level (Alt+Up)"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "go-up": {
+      "suggested_key": {
+        "default": "Alt+Up",
+        "mac": "Alt+Up"
+      },
+      "description": "Navigate up one level in the URL hierarchy"
+    }
+  }
+}

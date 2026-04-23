@@ -1,0 +1,5 @@
+# WSL / editor cruft
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
