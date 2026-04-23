@@ -21,6 +21,26 @@ function goUpOneLevel(currentUrl) {
     }
 }
 
+// Tabs pending a cache-bypass reload after their Up-navigation completes.
+// Kept in-memory: for the short window between tabs.update() and the matching
+// onUpdated "complete" event, the service worker almost always stays alive.
+// If the worker does sleep, Chrome will not fire the reload -- an acceptable
+// edge case given the alternative is wiring chrome.storage.session.
+const pendingReload = new Set();
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+    if (changeInfo.status === "complete" && pendingReload.has(tabId)) {
+        pendingReload.delete(tabId);
+        chrome.tabs.reload(tabId, { bypassCache: true }).catch(e => {
+            console.warn("UpOne: post-navigation reload failed:", e);
+        });
+    }
+});
+
+chrome.tabs.onRemoved.addListener((tabId) => {
+    pendingReload.delete(tabId);
+});
+
 async function navigateActiveTabUp() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab || !tab.url) {
@@ -29,11 +49,13 @@ async function navigateActiveTabUp() {
     }
     const newUrl = goUpOneLevel(tab.url);
     if (!newUrl || newUrl === tab.url) return;
+    pendingReload.add(tab.id);
     try {
         await chrome.tabs.update(tab.id, { url: newUrl });
     } catch (e) {
         // Chrome refuses some navigations from extensions (e.g. to chrome:// from a
-        // non-matching page). Log and continue -- nothing else to do.
+        // non-matching page). Log and drop the pending reload.
+        pendingReload.delete(tab.id);
         console.warn("UpOne: chrome.tabs.update refused:", tab.url, "->", newUrl, e);
     }
 }

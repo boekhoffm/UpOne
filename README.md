@@ -12,6 +12,7 @@ In a single press:
 
 1. Query string (`?...`) and fragment (`#...`) are removed.
 2. The last path segment is removed.
+3. Once the new page finishes loading, UpOne triggers a **hard refresh** (`bypassCache: true`) so the target page is fetched fresh from the server rather than served from Chrome's cache.
 
 The extension does **not** filter by scheme -- it tries on whatever the
 active tab is. Chrome itself refuses navigation on schemes where it is
