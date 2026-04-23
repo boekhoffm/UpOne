@@ -13,12 +13,9 @@ In a single press:
 1. Query string (`?...`) and fragment (`#...`) are removed.
 2. The last path segment is removed.
 
-### Supported schemes
-
-`http://`, `https://`, `file://`. Browser-internal schemes (`chrome://`,
-`about:`, `edge://`, `chrome-extension://`, `view-source:`, `data:`,
-`javascript:`, `devtools:`) are deliberately skipped -- the extension
-no-ops on those.
+The extension does **not** filter by scheme -- it tries on whatever the
+active tab is. Chrome itself refuses navigation on schemes where it is
+not appropriate.
 
 ### Examples
 
@@ -27,11 +24,9 @@ no-ops on those.
 | `https://example.com/a/b/c?q=1#x` | `https://example.com/a/b/` |
 | `https://example.com/a/b/` | `https://example.com/a/` |
 | `https://example.com/a/` | `https://example.com/` |
-| `https://example.com/` | *no change (already at root)* |
+| `https://example.com/` | *no change (nothing to strip)* |
 | `file:///C:/foo/bar/x.md` | `file:///C:/foo/bar/` |
 | `file:///C:/foo/bar/` | `file:///C:/foo/` |
-| `file:///C:/` | *no change (at drive root)* |
-| `chrome://extensions/` | *no change (browser-internal)* |
 
 ## Install (developer mode)
 
