@@ -36,8 +36,25 @@
         const cells = r.querySelectorAll("td");
         if (dateIdx >= cells.length) return 0;
         const t = cells[dateIdx].textContent.trim();
-        const d = Date.parse(t);
-        return isNaN(d) ? 0 : d;
+        
+        // Chromium format: "D/M/YYYY, HH:MM:SS" (day-first)
+        // Parse manually: "16/11/2025, 13:00:30" -> Date object
+        const match = t.match(/^(\d+)\/(\d+)\/(\d+),\s+(\d+):(\d+):(\d+)/);
+        if (!match) {
+            console.log(`dateOf: "${t}" -> NaN (parse failed)`);
+            return 0;
+        }
+        
+        const day = parseInt(match[1], 10);
+        const month = parseInt(match[2], 10) - 1; // 0-indexed
+        const year = parseInt(match[3], 10);
+        const hour = parseInt(match[4], 10);
+        const min = parseInt(match[5], 10);
+        const sec = parseInt(match[6], 10);
+        
+        const d = new Date(year, month, day, hour, min, sec);
+        const time = d.getTime();
+        return time || 0;
     };
 
     rows.sort((a, b) => dateOf(b) - dateOf(a));
