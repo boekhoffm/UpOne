@@ -62,4 +62,11 @@
     const frag = document.createDocumentFragment();
     rows.forEach(r => frag.appendChild(r));
     tbody.appendChild(frag);
+
+    // Click the Date Modified header to set Chrome's sort state
+    // so the column appears highlighted and subsequent clicks toggle correctly
+    const dateHeader = headers[dateIdx];
+    if (dateHeader) {
+        dateHeader.click();
+    }
 })();
