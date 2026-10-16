@@ -20,8 +20,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["file:///*"],
-      "js": ["content.js"],
+      "matches": [
+        "file:///*"
+      ],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_idle",
       "all_frames": false
     }
@@ -34,5 +38,10 @@
       },
       "description": "Navigate up one level in the URL hierarchy"
     }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
   }
 }
